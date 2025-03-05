@@ -21,6 +21,9 @@ import os
 import argparse
 import shutil
 import pdb
+import torch
+torch.set_num_threads(2)
+torch.set_num_interop_threads(2)
 
 def connect_point_trajectory(args, image_dir, output_dir, skip_exists=False, keep_intermediate=False):
     # set directories in the workspace
@@ -90,11 +93,14 @@ def sfm_reconstruction(args, image_dir, output_dir, traj_dir, skip_exists=False,
         assert False
 
     # # write depth and pose files from COLMAP format
-    write_depth_pose_from_colmap_format(sfm_dir, os.path.join(output_dir, "colmap_outputs_converted"))
+    colmap_outputs_converted_dir = os.path.join(output_dir, "colmap_outputs_converted")
+    write_depth_pose_from_colmap_format(sfm_dir, colmap_outputs_converted_dir)
 
     if not keep_intermediate:
         # remove labeled point trajectories
         shutil.rmtree(traj_dir)
+    
+    return sfm_dir, colmap_outputs_converted_dir
 
 def particlesfm(args, image_dir, output_dir, skip_exists=False, keep_intermediate=False):
     """
@@ -116,7 +122,10 @@ def particlesfm(args, image_dir, output_dir, skip_exists=False, keep_intermediat
 
     # sfm reconstruction
     if not args.skip_sfm:
-        sfm_reconstruction(args, image_dir, output_dir, traj_dir, skip_exists=skip_exists, keep_intermediate=keep_intermediate)
+        sfm_dir, colmap_outputs_converted_dir = sfm_reconstruction(args, image_dir, output_dir, traj_dir, skip_exists=skip_exists, keep_intermediate=keep_intermediate)
+    
+    shutil.rmtree(sfm_dir)
+    shutil.rmtree(os.path.join(colmap_outputs_converted_dir, 'depths'))
 
 def parse_args():
     parser = argparse.ArgumentParser("Dense point trajectory based colmap reconstruction for videos")

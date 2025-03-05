@@ -1,1 +1,1 @@
-python run_particlesfm.py --workspace_dir example/train/ --sfm_type global_theia --assume_static
+python run_particlesfm.py --workspace_dir example/snowboard/ --sfm_type global_theia --assume_static --skip_path_consistency
