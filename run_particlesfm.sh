@@ -1,0 +1,1 @@
+python run_particlesfm.py --workspace_dir example/train/ --sfm_type global_theia --assume_static

@@ -9,4 +9,5 @@
 **/build/
 example/
 outputs/
-
+cmake*/
+results*/
